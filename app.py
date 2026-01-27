@@ -44,7 +44,7 @@ df['Frequency_Pct'] = (df['Frequency'] / total_freq) * 100
 df['Chart_Label'] = df.apply(lambda row: f"{row['category']}, {row['Frequency_Pct']:.1f}%", axis=1)
 
 # --- 4. SIDEBAR CONTROLS ---
-st.sidebar.header("🔍 Highlight Method")
+st.sidebar.header("Highlight Method")
 
 # DROP DOWN MENU
 # We use a selectbox for single-item selection
@@ -71,12 +71,6 @@ st.sidebar.caption(f"""
 
 # --- 5. VISUALIZATION LOGIC ---
 
-# Logic: Create a column for opacity. 
-# Selected item = 1.0 (Full visibility), Others = 0.2 (Faded)
-df['opacity'] = df['category'].apply(lambda x: 1.0 if x == selected_algo else 0.2)
-# Logic: Create a column for sizing to ensure selected bubble doesn't get lost
-df['size_visual'] = df.apply(lambda x: x['Frequency'] if x['category'] == selected_algo else x['Frequency']*0.9, axis=1)
-
 # Professional Muted Pastel Palette
 pastel_map = {
     'ANN': '#DBA9C7', 'Bayesian Networks': '#88C9D4', 'Boosting/Gradient': '#8FBC8F',
@@ -85,18 +79,31 @@ pastel_map = {
     'Regression': '#8CBED6', 'SVM': '#708090'
 }
 
+# 1. Create the Base Chart (Draw everyone fully visible first)
 fig = px.scatter(
     df,
     x="Plot_C", y="Plot_D", 
-    size="size_visual", # Use adjusted size
+    size="Frequency", # Use standard frequency size
     color="category",
-    opacity=df['opacity'], # Apply dynamic opacity
     color_discrete_map=pastel_map, 
     text="Chart_Label",
     size_max=80, template="plotly_white",
     hover_data={'Plot_C': False, 'Plot_D': False, 'True_C': ':.2f', 'True_D': ':.2f', 'Frequency': False, 'Frequency_Pct': ':.1f', 'Chart_Label': False},
     labels={"Plot_C": "Complexity Fit (C)", "Plot_D": "Data Fit (D)"}
 )
+
+# 2. Apply "Spotlight" Effect (The Fix)
+# We loop through every trace (bubble group). If it matches the selection, we keep it bright.
+# If it doesn't match, we turn the opacity down to 0.1 (Transparent).
+for trace in fig.data:
+    if selected_algo in trace.name:
+        # SELECTED: Full Opacity, Bright Text
+        trace.marker.opacity = 1.0
+        trace.textfont.color = 'black'
+    else:
+        # UNSELECTED: Low Opacity, Faded Text
+        trace.marker.opacity = 0.1
+        trace.textfont.color = 'rgba(0,0,0,0.1)' # Make text almost invisible
 
 # Fix label alignment
 fig.update_traces(textposition='middle center')
@@ -111,7 +118,7 @@ fig.add_shape(type="rect", x0=c_median, y0=-0.1, x1=1.1, y1=d_median, fillcolor=
 fig.add_vline(x=c_median, line_width=1, line_dash="dash", line_color="grey")
 fig.add_hline(y=d_median, line_width=1, line_dash="dash", line_color="grey")
 
-# Add Quadrant Labels
+# Add Quadrant Labels (Transparent Grey)
 grey_text = "rgba(100, 100, 100, 0.4)"
 fig.add_annotation(x=0.4, y=0.65, text="Quadrant 2:<br>Simple & Robust", showarrow=False, font=dict(color=grey_text, size=16))
 fig.add_annotation(x=0.95, y=0.65, text="Quadrant 1:<br>Best of Both", showarrow=False, font=dict(color=grey_text, size=16))
@@ -143,3 +150,4 @@ The development of the framework was a result of a four-stage process:
 For full reproducibility, view the [Source Code & Analysis Pipeline](https://github.com/stutig-ops/clemson_viz_entry).
 
 """)
+
