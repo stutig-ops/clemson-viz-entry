@@ -56,7 +56,7 @@ st.sidebar.divider()
 # DETAILS PANEL (Conditional Logic Fixed)
 if selected_algo == "All Algorithms":
     # OPTION A: Overview Mode (No 'row' variable exists here)
-    st.sidebar.info("ℹ️ **Overview Mode**")
+    st.sidebar.info("**Overview Mode**")
     st.sidebar.caption("This view shows all algorithm categories simultaneously. Hover over the bubbles to see specific performance metrics.")
     st.sidebar.markdown("""
     **Key:**
@@ -79,14 +79,17 @@ else:
     st.sidebar.caption(f"**Usage Frequency:** {row['Frequency_Pct']:.1f}% of studies")
     
     # Contextual interpretation based on quadrant
-    if row['True_C'] > 0.5 and row['True_D'] > 0.5:
-        st.sidebar.success("🏆 **Quadrant 1: Best of Both**\nHigh power and high robustness.")
-    elif row['True_C'] > 0.5 and row['True_D'] <= 0.5:
-        st.sidebar.warning("⚠️ **Quadrant 4: Complex & Fragile**\nPowerful but sensitive to data quality.")
-    elif row['True_C'] <= 0.5 and row['True_D'] > 0.5:
-        st.sidebar.info("✅ **Quadrant 2: Simple & Robust**\nReliable for basic tasks.")
+    # We use the Medians (C=0.80, D=0.20) as the cutoffs to match the chart lines
+    
+    if row['True_C'] > 0.80 and row['True_D'] > 0.20:
+        st.sidebar.success("**Quadrant 1: Best of Both**\nHigh power and high robustness.")
+    elif row['True_C'] > 0.80 and row['True_D'] <= 0.20:
+        st.sidebar.warning("**Quadrant 4: Complex & Fragile**\nPowerful but sensitive to data quality.")
+    elif row['True_C'] <= 0.80 and row['True_D'] >= 0.20:
+        # Decision Tree (0.53, 0.28) and Naive-Bayesian (0.00, 0.20) fall here
+        st.sidebar.info("**Quadrant 2: Simple & Robust**\nReliable for basic tasks.")
     else:
-        st.sidebar.error("❌ **Quadrant 3: Limited Applicability**\nLow power and low robustness.")
+        st.sidebar.error("**Quadrant 3: Limited Applicability**\nLow power and low robustness.")
 
 # --- 5. VISUALIZATION LOGIC ---
 
@@ -171,6 +174,7 @@ The development of the framework was a result of a four-stage process:
 For full reproducibility, view the [Source Code & Analysis Pipeline](https://github.com/stutig-ops/clemson_viz_entry).
 
 """)
+
 
 
 
