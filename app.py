@@ -25,17 +25,17 @@ Y-Axis: **Data Fit (D)** - measures robustness to real-world construction data c
 # --- 3. DATA LOADING (Embedded for Stability) ---
 # We embed the data directly so the app doesn't break if a CSV is missing.
 data_rows = [
-    ('ANN', 0.82, 0.09, 0.82, 0.09, 9.7),
+    ('Artifical Neural Network (ANN)', 0.82, 0.09, 0.82, 0.09, 9.7),
     ('Bayesian Networks', 0.00, 0.20, 0.00, 0.20, 0.9),
     ('Boosting/Gradient', 0.84, 0.74, 0.84, 0.74, 25.7),
     ('Decision Tree', 0.53, 0.28, 0.53, 0.28, 10.6),
     ('Ensemble', 0.80, 0.35, 0.80, 0.35, 11.5),
     ('Extremely Randomized Trees', 0.80, 0.80, 0.76, 0.82, 0.9),
-    ('KNN', 0.40, 0.13, 0.40, 0.13, 5.3),
+    ('k-Nearest Neighbor (KNN)', 0.40, 0.13, 0.40, 0.13, 5.3),
     ('Naïve-Bayesian', 0.00, 0.20, 0.02, 0.25, 1.8),
     ('Random Forest', 0.88, 0.67, 0.88, 0.67, 13.3),
     ('Regression', 0.19, 0.20, 0.19, 0.20, 12.4),
-    ('SVM', 0.96, 0.20, 0.96, 0.20, 8.0)
+    ('Support Vector Machine (SVM)', 0.96, 0.20, 0.96, 0.20, 8.0)
 ]
 
 df = pd.DataFrame(data_rows, columns=['category', 'True_C', 'True_D', 'Plot_C', 'Plot_D', 'Frequency'])
@@ -174,6 +174,7 @@ The development of the framework was a result of a four-stage process:
 For full reproducibility, view the [Source Code & Analysis Pipeline](https://github.com/stutig-ops/clemson-viz-entry).
 
 """)
+
 
 
 
