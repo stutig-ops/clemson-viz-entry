@@ -1,4 +1,4 @@
-# Beyond Accuracy: ML Algorithm Suitability in Construction - Stuti Garg
+# ML Algorithm Selection Quadrant for Construction Industry - Stuti Garg
 **Graduate Student Data Visualization Competition 2026**
 
 ### 🔗 Live Dashboard
