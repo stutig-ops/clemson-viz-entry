@@ -171,9 +171,10 @@ The development of the framework was a result of a four-stage process:
 (3) development of a multidimensional scoring framework
 (4) quadrant-based visualization of the algorithms between model complexity, dataset characteristics and frequency of adoption
 
-For full reproducibility, view the [Source Code & Analysis Pipeline](https://github.com/stutig-ops/clemson_viz_entry).
+For full reproducibility, view the [Source Code & Analysis Pipeline](https://github.com/stutig-ops/clemson-viz-entry).
 
 """)
+
 
 
 
