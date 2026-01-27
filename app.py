@@ -4,7 +4,7 @@ import plotly.express as px
 
 # --- 1. PAGE CONFIGURATION ---
 st.set_page_config(
-    page_title="ML Algorithm Selection Quadrant for Construction Industry",
+    page_title="ML Algorithm Selection Quadrant for Construction - Graduate Student Data Visualization Competition 2026 - Stuti Garg",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -53,32 +53,40 @@ selected_algo = st.sidebar.selectbox("Select View:", algo_options, index=0)
 
 st.sidebar.divider()
 
-# DETAILS PANEL (Conditional)
+# DETAILS PANEL (Conditional Logic Fixed)
 if selected_algo == "All Algorithms":
-    st.sidebar.info("Overview Mode")
-    st.sidebar.caption("Hover over any bubble to see details.")
+    # OPTION A: Overview Mode (No 'row' variable exists here)
+    st.sidebar.info("ℹ️ **Overview Mode**")
+    st.sidebar.caption("This view shows all algorithm categories simultaneously. Hover over the bubbles to see specific performance metrics.")
+    st.sidebar.markdown("""
+    **Key:**
+    * **X-Axis:** Complexity Fit (Power)
+    * **Y-Axis:** Data Fit (Robustness)
+    * **Size:** Usage Frequency
+    """)
 else:
+    # OPTION B: Specific Method Mode
     # Extract data for the selected algorithm
     row = df[df['category'] == selected_algo].iloc[0]
+    
     st.sidebar.subheader(f"📊 {selected_algo}")
     col1, col2 = st.sidebar.columns(2)
     with col1:
-        st.metric("Complexity (C)", f"{row['True_C']:.2f}")
+        st.metric("Complexity (C)", f"{row['True_C']:.2f}", help="Ability to model non-linear, complex patterns.")
     with col2:
-        st.metric("Data Fit (D)", f"{row['True_D']:.2f}")
-    st.sidebar.caption(f"Usage Frequency: {row['Frequency_Pct']:.1f}%")
-
-st.sidebar.divider()
-st.sidebar.subheader(f"📊 {selected_algo} Stats")
-col1, col2 = st.sidebar.columns(2)
-with col1:
-    st.metric("Complexity Fit (C)", f"{row['True_C']:.2f}", help="Ability to model non-linear, complex patterns.")
-with col2:
-    st.metric("Data Fit (D)", f"{row['True_D']:.2f}", help="Robustness to missing data, small samples, and imbalance.")
-
-st.sidebar.caption(f"""
-**Usage Frequency:** {row['Frequency_Pct']:.1f}%
-""")
+        st.metric("Data Fit (D)", f"{row['True_D']:.2f}", help="Robustness to missing data, small samples, and imbalance.")
+    
+    st.sidebar.caption(f"**Usage Frequency:** {row['Frequency_Pct']:.1f}% of studies")
+    
+    # Contextual interpretation based on quadrant
+    if row['True_C'] > 0.5 and row['True_D'] > 0.5:
+        st.sidebar.success("🏆 **Quadrant 1: Best of Both**\nHigh power and high robustness.")
+    elif row['True_C'] > 0.5 and row['True_D'] <= 0.5:
+        st.sidebar.warning("⚠️ **Quadrant 4: Complex & Fragile**\nPowerful but sensitive to data quality.")
+    elif row['True_C'] <= 0.5 and row['True_D'] > 0.5:
+        st.sidebar.info("✅ **Quadrant 2: Simple & Robust**\nReliable for basic tasks.")
+    else:
+        st.sidebar.error("❌ **Quadrant 3: Limited Applicability**\nLow power and low robustness.")
 
 # --- 5. VISUALIZATION LOGIC ---
 
@@ -163,5 +171,6 @@ The development of the framework was a result of a four-stage process:
 For full reproducibility, view the [Source Code & Analysis Pipeline](https://github.com/stutig-ops/clemson_viz_entry).
 
 """)
+
 
 
