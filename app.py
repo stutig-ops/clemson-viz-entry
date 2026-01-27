@@ -143,10 +143,10 @@ fig.add_vline(x=c_median, line_width=1, line_dash="dash", line_color="grey")
 fig.add_hline(y=d_median, line_width=1, line_dash="dash", line_color="grey")
 
 # Add Quadrant Labels (Transparent Grey)
-grey_text = "rgba(100, 100, 100, 0.4)"
-fig.add_annotation(x=0.4, y=0.65, text="Quadrant 2:<br>Simple & Robust", showarrow=False, font=dict(color=grey_text, size=16))
+grey_text = "rgba(100, 100, 100, 0.6)"
+fig.add_annotation(x=0.3, y=0.65, text="Quadrant 2:<br>Simple & Robust", showarrow=False, font=dict(color=grey_text, size=16))
 fig.add_annotation(x=0.95, y=0.65, text="Quadrant 1:<br>Best of Both", showarrow=False, font=dict(color=grey_text, size=16))
-fig.add_annotation(x=0.4, y=0.1, text="Quadrant 3:<br>Limited Applicability", showarrow=False, font=dict(color=grey_text, size=16))
+fig.add_annotation(x=0.3, y=0.1, text="Quadrant 3:<br>Limited Applicability", showarrow=False, font=dict(color=grey_text, size=16))
 fig.add_annotation(x=0.95, y=0.1, text="Quadrant 4:<br>Complex & Fragile", showarrow=False, font=dict(color=grey_text, size=16))
 
 fig.update_layout(
@@ -174,6 +174,7 @@ The development of the framework was a result of a four-stage process:
 For full reproducibility, view the [Source Code & Analysis Pipeline](https://github.com/stutig-ops/clemson-viz-entry).
 
 """)
+
 
 
 
