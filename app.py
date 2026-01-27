@@ -47,15 +47,26 @@ df['Chart_Label'] = df.apply(lambda row: f"{row['category']}, {row['Frequency_Pc
 st.sidebar.header("Highlight Method")
 
 # DROP DOWN MENU
-# We use a selectbox for single-item selection
-algo_options = sorted(df['category'].unique())
-# Default to "Boosting/Gradient" if available, else first item
-default_index = algo_options.index('Boosting/Gradient') if 'Boosting/Gradient' in algo_options else 0
-selected_algo = st.sidebar.selectbox("Select an Algorithm:", algo_options, index=default_index)
+# Add "All Algorithms" to the top of the list
+algo_options = ["All Algorithms"] + sorted(df['category'].unique())
+selected_algo = st.sidebar.selectbox("Select View:", algo_options, index=0)
 
-# DETAILS PANEL (The Scores)
-# Extract data for the selected algorithm
-row = df[df['category'] == selected_algo].iloc[0]
+st.sidebar.divider()
+
+# DETAILS PANEL (Conditional)
+if selected_algo == "All Algorithms":
+    st.sidebar.info("Overview Mode")
+    st.sidebar.caption("Hover over any bubble to see details.")
+else:
+    # Extract data for the selected algorithm
+    row = df[df['category'] == selected_algo].iloc[0]
+    st.sidebar.subheader(f"📊 {selected_algo}")
+    col1, col2 = st.sidebar.columns(2)
+    with col1:
+        st.metric("Complexity (C)", f"{row['True_C']:.2f}")
+    with col2:
+        st.metric("Data Fit (D)", f"{row['True_D']:.2f}")
+    st.sidebar.caption(f"Usage Frequency: {row['Frequency_Pct']:.1f}%")
 
 st.sidebar.divider()
 st.sidebar.subheader(f"📊 {selected_algo} Stats")
@@ -79,11 +90,11 @@ pastel_map = {
     'Regression': '#8CBED6', 'SVM': '#708090'
 }
 
-# 1. Create the Base Chart (Draw everyone fully visible first)
+# 1. Create the Base Chart
 fig = px.scatter(
     df,
     x="Plot_C", y="Plot_D", 
-    size="Frequency", # Use standard frequency size
+    size="Frequency", 
     color="category",
     color_discrete_map=pastel_map, 
     text="Chart_Label",
@@ -92,18 +103,20 @@ fig = px.scatter(
     labels={"Plot_C": "Complexity Fit (C)", "Plot_D": "Data Fit (D)"}
 )
 
-# 2. Apply "Spotlight" Effect (The Fix)
-# We loop through every trace (bubble group). If it matches the selection, we keep it bright.
-# If it doesn't match, we turn the opacity down to 0.1 (Transparent).
+# 2. Apply "Spotlight" Effect based on Selection
 for trace in fig.data:
-    if selected_algo in trace.name:
-        # SELECTED: Full Opacity, Bright Text
+    if selected_algo == "All Algorithms":
+        # SHOW ALL: Full Opacity
+        trace.marker.opacity = 1.0
+        trace.textfont.color = 'black'
+    elif selected_algo in trace.name:
+        # SELECTED: Full Opacity
         trace.marker.opacity = 1.0
         trace.textfont.color = 'black'
     else:
-        # UNSELECTED: Low Opacity, Faded Text
+        # UNSELECTED: Low Opacity
         trace.marker.opacity = 0.1
-        trace.textfont.color = 'rgba(0,0,0,0.1)' # Make text almost invisible
+        trace.textfont.color = 'rgba(0,0,0,0.1)' 
 
 # Fix label alignment
 fig.update_traces(textposition='middle center')
@@ -150,4 +163,5 @@ The development of the framework was a result of a four-stage process:
 For full reproducibility, view the [Source Code & Analysis Pipeline](https://github.com/stutig-ops/clemson_viz_entry).
 
 """)
+
 
