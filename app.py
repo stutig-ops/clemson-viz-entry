@@ -95,10 +95,32 @@ else:
 
 # Professional Muted Pastel Palette
 pastel_map = {
-    'ANN': '#DBA9C7', 'Bayesian Networks': '#88C9D4', 'Boosting/Gradient': '#8FBC8F',
-    'Decision Tree': '#B39EB5', 'Ensemble': '#F4C2C2', 'Extremely Randomized Trees': '#D9D98C',
-    'KNN': '#A9A9A9', 'Naïve-Bayesian': '#BC8F8F', 'Random Forest': '#E9967A',
-    'Regression': '#8CBED6', 'SVM': '#708090'
+    'ANN': '#D4BDCA',                    # Dusty Pink (was #DBA9C7)
+    'Bayesian Networks': '#A6C6CC',      # Powder Teal (was #88C9D4)
+    'Boosting/Gradient': '#A3C1A3',      # Sage Green (was #8FBC8F)
+    'Decision Tree': '#BFB5C2',          # Lilac Grey (was #B39EB5)
+    'Ensemble': '#E6C8C8',               # Dusty Rose (was #F4C2C2)
+    'Extremely Randomized Trees': '#D1D1AA', # Khaki Pastel (was #D9D98C)
+    'KNN': '#C0C0C0',                    # Soft Silver (was #A9A9A9)
+    'Naïve-Bayesian': '#C4AFAF',         # Mauve Taupe (was #BC8F8F)
+    'Random Forest': '#DDB8AC',          # Peach Grey (was #E9967A)
+    'Regression': '#ABC6D4',             # Slate Blue Pastel (was #8CBED6)
+    'SVM': '#909AA3'                     # Steel Grey (was #708090)
+}
+
+# --- CUSTOM LABEL POSITIONS ---
+custom_positions = {
+    'ANN': 'top center',
+    'Bayesian Networks': 'bottom center', 
+    'Boosting/Gradient': 'top center',
+    'Decision Tree': 'top center',
+    'Ensemble': 'top center',
+    'Extremely Randomized Trees': 'top left',
+    'KNN': 'top center',
+    'Naïve-Bayesian': 'top center',
+    'Random Forest': 'bottom center',
+    'Regression': 'top center',
+    'SVM': 'middle left'
 }
 
 # 1. Create the Base Chart
@@ -114,23 +136,25 @@ fig = px.scatter(
     labels={"Plot_C": "Complexity Fit (C)", "Plot_D": "Data Fit (D)"}
 )
 
-# 2. Apply "Spotlight" Effect based on Selection
+# 2. Apply "Spotlight" Effect AND Custom Text Positions
 for trace in fig.data:
+    # A. Apply Custom Text Position
+    # If the algorithm name is in our dictionary, use that position. Otherwise default to 'top center'.
+    if trace.name in custom_positions:
+        trace.textposition = custom_positions[trace.name]
+    else:
+        trace.textposition = 'top center'
+
+    # B. Apply Opacity (Spotlight)
     if selected_algo == "All Algorithms":
-        # SHOW ALL: Full Opacity
         trace.marker.opacity = 1.0
         trace.textfont.color = 'black'
-    elif selected_algo in trace.name:
-        # SELECTED: Full Opacity
+    elif trace.name == selected_algo:
         trace.marker.opacity = 1.0
         trace.textfont.color = 'black'
     else:
-        # UNSELECTED: Low Opacity
         trace.marker.opacity = 0.1
-        trace.textfont.color = 'rgba(0,0,0,0.1)' 
-
-# Fix label alignment
-fig.update_traces(textposition='middle center')
+        trace.textfont.color = 'rgba(0,0,0,0.1)'
 
 # Add Quadrant Backgrounds
 c_median, d_median = 0.80, 0.20
@@ -149,15 +173,37 @@ fig.add_annotation(x=0.95, y=0.65, text="Quadrant 1:<br>Best of Both", showarrow
 fig.add_annotation(x=0.3, y=0.1, text="Quadrant 3:<br>Limited Applicability", showarrow=False, font=dict(color=grey_text, size=16))
 fig.add_annotation(x=0.95, y=0.1, text="Quadrant 4:<br>Complex & Fragile", showarrow=False, font=dict(color=grey_text, size=16))
 
+# --- LAYOUT UPDATE (SCIENTIFIC GRID) ---
 fig.update_layout(
     height=700,
-    margin=dict(l=40, r=40, t=40, b=40),
-    xaxis=dict(range=[-0.1, 1.1], title_font=dict(size=18)),
-    yaxis=dict(range=[-0.1, 1.1], title_font=dict(size=18)),
-    showlegend=False
+    margin=dict(l=40, r=40, t=60, b=40),
+    showlegend=False,
+    # X-Axis: Vertical Grids enabled
+    xaxis=dict(
+        range=[-0.1, 1.1], 
+        title_font=dict(size=18),
+        showgrid=True,        # Vertical Grid
+        gridwidth=1,
+        gridcolor='#E5E5E5',  # Subtle Grey
+        showline=True,        # Axis Border
+        linewidth=1, 
+        linecolor='black',
+        mirror=True           # Box Effect
+    ),
+    # Y-Axis: Horizontal Grids enabled
+    yaxis=dict(
+        range=[-0.1, 1.2], 
+        title_font=dict(size=18),
+        showgrid=True,        # Horizontal Grid
+        gridwidth=1,
+        gridcolor='#E5E5E5',
+        showline=True,
+        linewidth=1, 
+        linecolor='black',
+        mirror=True
+    )
 )
 
-# Render Chart
 st.plotly_chart(fig, use_container_width=True)
 
 # --- 6. METHODOLOGY FOOTER ---
@@ -174,6 +220,7 @@ The development of the framework was a result of a four-stage process:
 For full reproducibility, view the [Source Code & Analysis Pipeline](https://github.com/stutig-ops/clemson-viz-entry).
 
 """)
+
 
 
 
