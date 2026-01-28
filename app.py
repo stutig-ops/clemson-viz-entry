@@ -95,17 +95,17 @@ else:
 
 # Professional Muted Pastel Palette
 pastel_map = {
-    'ANN': '#D4BDCA',                    # Dusty Pink (was #DBA9C7)
-    'Bayesian Networks': '#A6C6CC',      # Powder Teal (was #88C9D4)
-    'Boosting/Gradient': '#A3C1A3',      # Sage Green (was #8FBC8F)
-    'Decision Tree': '#BFB5C2',          # Lilac Grey (was #B39EB5)
-    'Ensemble': '#E6C8C8',               # Dusty Rose (was #F4C2C2)
-    'Extremely Randomized Trees': '#D1D1AA', # Khaki Pastel (was #D9D98C)
-    'KNN': '#C0C0C0',                    # Soft Silver (was #A9A9A9)
-    'Naïve-Bayesian': '#C4AFAF',         # Mauve Taupe (was #BC8F8F)
-    'Random Forest': '#DDB8AC',          # Peach Grey (was #E9967A)
-    'Regression': '#ABC6D4',             # Slate Blue Pastel (was #8CBED6)
-    'SVM': '#909AA3'                     # Steel Grey (was #708090)
+    'ANN': '#D68C9F',                    # Deep Dusty Rose (Darker/Redder)
+    'Bayesian Networks': '#A6C6CC',      # Powder Teal
+    'Boosting/Gradient': '#A3C1A3',      # Sage Green
+    'Decision Tree': '#BFB5C2',          # Lilac Grey
+    'Ensemble': '#E6C8C8',               # Dusty Rose
+    'Extremely Randomized Trees': '#D1D1AA', # Khaki Pastel
+    'KNN': '#9FA8DA',                    # Muted Periwinkle (Now distinctly BLUE, not grey)
+    'Naïve-Bayesian': '#C4AFAF',         # Mauve Taupe
+    'Random Forest': '#DDB8AC',          # Peach Grey
+    'Regression': '#ABC6D4',             # Slate Blue Pastel
+    'SVM': '#78909C'                     # Blue Grey (Darker and distinct from the background)
 }
 
 # --- CUSTOM LABEL POSITIONS ---
@@ -220,6 +220,7 @@ The development of the framework was a result of a four-stage process:
 For full reproducibility, view the [Source Code & Analysis Pipeline](https://github.com/stutig-ops/clemson-viz-entry).
 
 """)
+
 
 
 
