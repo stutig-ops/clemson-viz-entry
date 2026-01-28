@@ -22,80 +22,77 @@ Y-Axis: **Data Fit (D)** - measures robustness to real-world construction data c
 * **Quadrant 4:** Complex and Fragile: (high C, low D) ANN scores exceptionally high in their ability to manage complex dataset interactions, with not much emphasis on handling missing data or rare event predictions. SVM, on the other hand, with kernel tricks, can handle multi-dimensional datasets that require synthetic oversampling to mitigate imbalanced classes.
 """)
 
-# --- 3. DATA LOADING (Embedded for Stability) ---
-# We embed the data directly so the app doesn't break if a CSV is missing.
+# --- 3. DATA LOADING ---
+# Format: ('Category', True_C, True_D, Plot_C, Plot_D, Frequency, Safety_Score, Schedule_Score, Cost_Score)
 data_rows = [
-    ('Artifical Neural Network (ANN)', 0.82, 0.09, 0.82, 0.09, 9.7),
-    ('Bayesian Networks', 0.00, 0.20, 0.00, 0.20, 0.9),
-    ('Boosting/Gradient', 0.84, 0.74, 0.84, 0.74, 25.7),
-    ('Decision Tree', 0.53, 0.28, 0.53, 0.28, 10.6),
-    ('Ensemble', 0.80, 0.35, 0.80, 0.35, 11.5),
-    ('Extremely Randomized Trees', 0.80, 0.80, 0.76, 0.82, 0.9),
-    ('k-Nearest Neighbor (KNN)', 0.40, 0.13, 0.40, 0.13, 5.3),
-    ('Naïve-Bayesian', 0.00, 0.20, 0.02, 0.25, 1.8),
-    ('Random Forest', 0.88, 0.67, 0.88, 0.67, 13.3),
-    ('Regression', 0.19, 0.20, 0.19, 0.20, 12.4),
-    ('Support Vector Machine (SVM)', 0.96, 0.20, 0.96, 0.20, 8.0)
+    ('ANN', 0.82, 0.09, 0.82, 0.09, 11, 0.20, 0.38, 0.44),
+    ('Bayesian Networks', 0.00, 0.20, 0.00, 0.20, 1, 0.25, 0.00, 0.45),
+    ('Boosting/Gradient', 0.84, 0.74, 0.84, 0.74, 29, 0.81, 0.72, 0.59),
+    ('Decision Tree', 0.53, 0.28, 0.53, 0.28, 12, 0.38, 0.18, 0.61),
+    ('Ensemble', 0.80, 0.35, 0.80, 0.35, 13, 0.46, 0.44, 0.47),
+    ('Extremely Randomized Trees', 0.80, 0.80, 0.80, 0.80, 1, 0.88, 0.85, 0.68),
+    ('KNN', 0.40, 0.13, 0.40, 0.13, 6, 0.125, 0.10, 0.475),
+    ('Naïve-Bayesian', 0.00, 0.20, 0.00, 0.20, 2, 0.25, 0.00, 0.45),
+    ('Random Forest', 0.88, 0.67, 0.88, 0.67, 15, 0.80, 0.68, 0.55),
+    ('Regression', 0.19, 0.20, 0.19, 0.20, 14, 0.29, 0.10, 0.45),
+    ('SVM', 0.96, 0.20, 0.96, 0.20, 9, 0.32, 0.35, 0.49)
 ]
 
-df = pd.DataFrame(data_rows, columns=['category', 'True_C', 'True_D', 'Plot_C', 'Plot_D', 'Frequency'])
+df = pd.DataFrame(data_rows, columns=['category', 'True_C', 'True_D', 'Plot_C', 'Plot_D', 'Frequency', 'Safety_Score', 'Schedule_Score', 'Cost_Score'])
 total_freq = df['Frequency'].sum()
 df['Frequency_Pct'] = (df['Frequency'] / total_freq) * 100
 df['Chart_Label'] = df.apply(lambda row: f"{row['category']}, {row['Frequency_Pct']:.1f}%", axis=1)
 
 # --- 4. SIDEBAR CONTROLS ---
-st.sidebar.header("Highlight Method")
+st.sidebar.header("⚙️ Configuration")
 
-# DROP DOWN MENU
-# Add "All Algorithms" to the top of the list
-algo_options = ["All Algorithms"] + sorted(df['category'].unique())
-selected_algo = st.sidebar.selectbox("Select View:", algo_options, index=0)
+# A. Task Context Selector
+task_context = st.sidebar.radio(
+    "Select Task Context:",
+    ("General Overview", "Safety Management", "Schedule Optimization", "Cost Prediction"),
+    help="Switch between a general view (Size=Frequency) and task views (Size=Suitability)."
+)
 
 st.sidebar.divider()
 
-# DETAILS PANEL (Conditional Logic Fixed)
-if selected_algo == "All Algorithms":
-    # OPTION A: Overview Mode (No 'row' variable exists here)
-    st.sidebar.info("**Overview Mode**")
-    st.sidebar.caption("This view shows all algorithm categories simultaneously. Hover over the bubbles to see specific performance metrics.")
-    st.sidebar.markdown("""
-    **Key:**
-    * **X-Axis:** Complexity Fit (Power)
-    * **Y-Axis:** Data Fit (Robustness)
-    * **Size:** Usage Frequency
-    """)
-else:
-    # OPTION B: Specific Method Mode
-    # Extract data for the selected algorithm
+# B. Method Selector (Visible in ALL Modes)
+st.sidebar.subheader("🔍 Highlight Method")
+algo_options = ["All Algorithms"] + sorted(df['category'].unique())
+# Default to "All" unless you want to auto-select one
+selected_algo = st.sidebar.selectbox("Select View:", algo_options, index=0)
+
+# Details Panel Logic
+if selected_algo != "All Algorithms":
     row = df[df['category'] == selected_algo].iloc[0]
-    
     st.sidebar.subheader(f"📊 {selected_algo}")
     col1, col2 = st.sidebar.columns(2)
     with col1:
-        st.metric("Complexity (C)", f"{row['True_C']:.2f}", help="Ability to model non-linear, complex patterns.")
+        st.metric("Complexity (C)", f"{row['True_C']:.2f}")
     with col2:
-        st.metric("Data Fit (D)", f"{row['True_D']:.2f}", help="Robustness to missing data, small samples, and imbalance.")
+        st.metric("Data Fit (D)", f"{row['True_D']:.2f}")
     
-    st.sidebar.caption(f"**Usage Frequency:** {row['Frequency_Pct']:.1f}% of studies")
-    
-    # Contextual interpretation based on quadrant
-    # We use the Medians (C=0.80, D=0.20) as the cutoffs to match the chart lines
-    
-    if row['True_C'] > 0.80 and row['True_D'] > 0.20:
-        st.sidebar.success("**Quadrant 1: Best of Both**\nHigh power and high robustness.")
-    elif row['True_C'] > 0.80 and row['True_D'] <= 0.20:
-        st.sidebar.warning("**Quadrant 4: Complex & Fragile**\nPowerful but sensitive to data quality.")
-    elif row['True_C'] <= 0.80 and row['True_D'] >= 0.20:
-        # Decision Tree (0.53, 0.28) and Naive-Bayesian (0.00, 0.20) fall here
-        st.sidebar.info("**Quadrant 2: Simple & Robust**\nReliable for basic tasks.")
+    # Show Specific Score if in Task Mode
+    if task_context == "Safety Management":
+        st.sidebar.metric("🛡️ Safety Score", f"{row['Safety_Score']:.2f}", delta_color="normal")
+    elif task_context == "Schedule Optimization":
+        st.sidebar.metric("📅 Schedule Score", f"{row['Schedule_Score']:.2f}", delta_color="normal")
+    elif task_context == "Cost Prediction":
+        st.sidebar.metric("💰 Cost Score", f"{row['Cost_Score']:.2f}", delta_color="normal")
     else:
-        st.sidebar.error("**Quadrant 3: Limited Applicability**\nLow power and low robustness.")
+        st.sidebar.caption(f"**Usage Frequency:** {row['Frequency_Pct']:.1f}%")
+
+else:
+    # Context Description
+    if task_context != "General Overview":
+        st.sidebar.info(f"ℹ️ **{task_context}**")
+        st.sidebar.markdown("Bubble **Size** represents the suitability score for this task.")
+        st.sidebar.caption("Larger Bubble = Better Choice")
 
 # --- 5. VISUALIZATION LOGIC ---
 
 # Professional Muted Pastel Palette
 pastel_map = {
-    'Artifical Neural Network (ANN)': '#D68C9F',                    # Deep Dusty Rose (Darker/Redder)
+    'Artifical Neural Network (ANN)': '#D68C9F', # Deep Dusty Rose (Darker/Redder)
     'Bayesian Networks': '#A6C6CC',      # Powder Teal
     'Boosting/Gradient': '#A3C1A3',      # Sage Green
     'Decision Tree': '#BFB5C2',          # Lilac Grey
@@ -123,40 +120,65 @@ custom_positions = {
     'SVM': 'middle left'
 }
 
-# 1. Create the Base Chart
+# --- PREPARE DATA FOR PLOTTING ---
+# We create a dynamic 'Size_Var' column based on the context
+if task_context == "General Overview":
+    df['Size_Var'] = df['Frequency']
+    df['Size_Label'] = df['Frequency'].astype(str) + " Studies"
+    hover_col = 'Frequency'
+elif task_context == "Safety Management":
+    # Scale up scores (x30) so bubbles are visible
+    df['Size_Var'] = df['Safety_Score'] * 40 
+    df['Size_Label'] = df['Safety_Score'].round(2).astype(str)
+    hover_col = 'Safety_Score'
+elif task_context == "Schedule Optimization":
+    df['Size_Var'] = df['Schedule_Score'] * 40
+    df['Size_Label'] = df['Schedule_Score'].round(2).astype(str)
+    hover_col = 'Schedule_Score'
+elif task_context == "Cost Prediction":
+    df['Size_Var'] = df['Cost_Score'] * 40
+    df['Size_Label'] = df['Cost_Score'].round(2).astype(str)
+    hover_col = 'Cost_Score'
+
+# --- GENERATE CHART ---
 fig = px.scatter(
-    df,
-    x="Plot_C", y="Plot_D", 
-    size="Frequency", 
-    color="category",
-    color_discrete_map=pastel_map, 
-    text="Chart_Label",
-    size_max=80, template="plotly_white",
-    hover_data={'Plot_C': False, 'Plot_D': False, 'True_C': ':.2f', 'True_D': ':.2f', 'Frequency': False, 'Frequency_Pct': ':.1f', 'Chart_Label': False},
+    df, 
+    x="Plot_C", 
+    y="Plot_D", 
+    size="Size_Var",  # Dynamic Size
+    color="category", 
+    color_discrete_map=pastel_map, # Consistent Pastel Colors
+    text="Chart_Label", 
+    size_max=80, 
+    template="plotly_white",
+    hover_data={'Plot_C': False, 'Plot_D': False, 'Size_Var': False, hover_col: True},
     labels={"Plot_C": "Complexity Fit (C)", "Plot_D": "Data Fit (D)"}
 )
 
-# 2. Apply "Spotlight" Effect AND Custom Text Positions
+# --- APPLY FORMATTING (Spotlight + Grid + Quadrants) ---
 for trace in fig.data:
-    # A. Apply Custom Text Position
-    # If the algorithm name is in our dictionary, use that position. Otherwise default to 'top center'.
+    # A. Custom Text Position
     if trace.name in custom_positions:
         trace.textposition = custom_positions[trace.name]
     else:
         trace.textposition = 'top center'
 
-    # B. Apply Opacity (Spotlight)
+    # B. Spotlight Effect (Works in ALL modes now)
     if selected_algo == "All Algorithms":
         trace.marker.opacity = 1.0
         trace.textfont.color = 'black'
     elif trace.name == selected_algo:
         trace.marker.opacity = 1.0
         trace.textfont.color = 'black'
+        trace.marker.line.width = 2
+        trace.marker.line.color = 'black'
     else:
-        trace.marker.opacity = 0.1
+        # Grey out unselected
+        trace.marker.color = '#e0e0e0' 
+        trace.marker.opacity = 0.3
         trace.textfont.color = 'rgba(0,0,0,0.1)'
 
-# Add Quadrant Backgrounds
+# Quadrant Backgrounds
 c_median, d_median = 0.80, 0.20
 fig.add_shape(type="rect", x0=c_median, y0=d_median, x1=1.1, y1=1.1, fillcolor="#F0F4F8", opacity=0.4, layer="below", line_width=0)
 fig.add_shape(type="rect", x0=-0.1, y0=d_median, x1=c_median, y1=1.1, fillcolor="#F5F5F0", opacity=0.4, layer="below", line_width=0)
@@ -173,35 +195,13 @@ fig.add_annotation(x=0.95, y=0.65, text="Quadrant 1:<br>Best of Both", showarrow
 fig.add_annotation(x=0.3, y=0.1, text="Quadrant 3:<br>Limited Applicability", showarrow=False, font=dict(color=grey_text, size=16))
 fig.add_annotation(x=0.95, y=0.1, text="Quadrant 4:<br>Complex & Fragile", showarrow=False, font=dict(color=grey_text, size=16))
 
-# --- LAYOUT UPDATE (SCIENTIFIC GRID) ---
+# Scientific Layout
 fig.update_layout(
     height=700,
     margin=dict(l=40, r=40, t=60, b=40),
-    showlegend=False,
-    # X-Axis: Vertical Grids enabled
-    xaxis=dict(
-        range=[-0.1, 1.1], 
-        title_font=dict(size=18),
-        showgrid=True,        # Vertical Grid
-        gridwidth=1,
-        gridcolor='#E5E5E5',  # Subtle Grey
-        showline=True,        # Axis Border
-        linewidth=1, 
-        linecolor='black',
-        mirror=True           # Box Effect
-    ),
-    # Y-Axis: Horizontal Grids enabled
-    yaxis=dict(
-        range=[-0.1, 1.2], 
-        title_font=dict(size=18),
-        showgrid=True,        # Horizontal Grid
-        gridwidth=1,
-        gridcolor='#E5E5E5',
-        showline=True,
-        linewidth=1, 
-        linecolor='black',
-        mirror=True
-    )
+    xaxis=dict(range=[-0.1, 1.1], title_font=dict(size=18), showgrid=True, gridwidth=1, gridcolor='#E5E5E5', showline=True, linewidth=1, linecolor='black', mirror=True),
+    yaxis=dict(range=[-0.1, 1.2], title_font=dict(size=18), showgrid=True, gridwidth=1, gridcolor='#E5E5E5', showline=True, linewidth=1, linecolor='black', mirror=True),
+    showlegend=False
 )
 
 st.plotly_chart(fig, use_container_width=True)
@@ -220,6 +220,7 @@ The development of the framework was a result of a four-stage process:
 For full reproducibility, view the [Source Code & Analysis Pipeline](https://github.com/stutig-ops/clemson-viz-entry).
 
 """)
+
 
 
 
