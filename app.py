@@ -95,17 +95,17 @@ else:
 
 # Professional Muted Pastel Palette
 pastel_map = {
-    'ANN': '#D68C9F',                    # Deep Dusty Rose (Darker/Redder)
+    'Artifical Neural Network (ANN)': '#D68C9F',                    # Deep Dusty Rose (Darker/Redder)
     'Bayesian Networks': '#A6C6CC',      # Powder Teal
     'Boosting/Gradient': '#A3C1A3',      # Sage Green
     'Decision Tree': '#BFB5C2',          # Lilac Grey
     'Ensemble': '#E6C8C8',               # Dusty Rose
     'Extremely Randomized Trees': '#D1D1AA', # Khaki Pastel
-    'KNN': '#9FA8DA',                    # Muted Periwinkle (Now distinctly BLUE, not grey)
+    'k-Nearest Neighbor (KNN)': '#9FA8DA',                    # Muted Periwinkle (Now distinctly BLUE, not grey)
     'Naïve-Bayesian': '#C4AFAF',         # Mauve Taupe
     'Random Forest': '#DDB8AC',          # Peach Grey
     'Regression': '#ABC6D4',             # Slate Blue Pastel
-    'SVM': '#78909C'                     # Blue Grey (Darker and distinct from the background)
+    'Support Vector Machine (SVM)': '#78909C'                     # Blue Grey (Darker and distinct from the background)
 }
 
 # --- CUSTOM LABEL POSITIONS ---
@@ -220,6 +220,7 @@ The development of the framework was a result of a four-stage process:
 For full reproducibility, view the [Source Code & Analysis Pipeline](https://github.com/stutig-ops/clemson-viz-entry).
 
 """)
+
 
 
 
